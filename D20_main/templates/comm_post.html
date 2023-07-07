@@ -1,0 +1,34 @@
+{% extends 'flatpages/default.html' %}
+
+
+{% block title %}
+Отклики на мои объявления
+{% endblock title %}
+
+{% block content %}
+    {% for post in page_obj %}
+    <tr>
+        <td>{{ post.title|censor }}</td>
+        <td>
+            {% for category in post.category.all %}
+                <a href="{% url 'category_list' category.id %}">{{ category }}</a>
+            {% endfor %}
+        </td>
+        <td>{{ post.date_in|date:'d M Y' }}</td>
+        <td>{{ post.text|censor|truncatechars:20 }}</td>
+        <td>
+            {% for comment in post.comments.all %}
+                <p>{{ comment.text }}</p>
+            {% empty %}
+                <p>нет комментариев</p>
+            {% endfor %}
+            <form method="post" action="{% url 'comm_create' post.id %}">
+                {% csrf_token %}
+                <textarea name="text"></textarea>
+                <br>
+                <input type="submit" value="добавить коммент">
+            </form>
+        </td>
+    </tr>
+{% endfor %}
+{% endblock content %}

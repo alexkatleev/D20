@@ -1,0 +1,45 @@
+{% extends 'flatpages/default.html' %}
+
+{% load censor %}
+{% load custom_tags %}
+
+{% block title %}
+Onenews
+{% endblock title %}
+
+{% block content %}
+<h1>{{ onenews.title|censor }}</h1>
+<hr>
+{% if onenews %}
+    <table>
+        <td>
+        <a href="{% url 'post_edit' onenews.id %}"style="background-color:#ffffa1"><u>Редактировать</u></a> <!--ссылка на редактирование поста-->
+        <a href="{% url 'post_delete' onenews.id %}"style="color:red"><u> Удалить </u></a> <!-- ссылка на удаление поста-->
+        </td>
+        <tr>
+            <td>заголовок</td>
+            <td>категории</td>
+            <td></td>
+            <td>дата публикации</td>
+            <td>содержание</td>
+            <td>коментарий</td>
+        </tr>
+        <tr>
+        <td>{{ onenews.title|censor}}</td>
+        <td>
+        {% for category in onenews.category.all %}
+            <a href="{% url 'category_list' category.id %}">{{ category }}</a>
+        {% endfor %}
+        </td>
+        <td></td>
+        <td>{{ onenews.date_in|date:'d M Y'}}</td>
+        <td>{{ onenews.text|censor|truncatechars:20}}</td>
+        <td>
+            {% include 'comm_reply.html' %}
+        </td>
+    </tr>
+    </table>
+{% else %}
+    <h2>упс! её нет!</h2>
+{% endif %}
+{% endblock content %}

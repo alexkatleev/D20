@@ -1,0 +1,38 @@
+{% extends 'flatpages/default.html' %}
+{% load censor %}
+{% load custom_tags %}
+
+{% block title %}
+    <title>Post</title>
+{% endblock title %}
+
+{% block content %}
+    <!-- вывод поста -->
+    <h1>{{ post.title }}</h1>
+    Автор: {{ post.author_post }} - {{ post.date_in }}
+    <br>
+    <!-- вывод категории -->
+    {% for category in post.category.all %}
+        {{ category.tematic }}
+    {% endfor %}
+    <br>
+    <hr>
+    {{ post.text|safe }}
+    <!-- выводим форму создания комментария -->
+    <form method="post">
+        Ваш комментарий:
+        {% csrf_token %}
+        {{ form.as_div }}
+        <button type="submit" style="font-size:0.8em;">Отправить</button>
+    </form>
+    <br>
+    <!-- выводим существующие комментарии -->
+    {% for comment in comments %}
+        <div style="dorder: 1px solid black">
+            {{ comment.user_comment }}
+            <br>
+            {{ comment.text }}
+        </div>
+    {% endfor %}
+{% endblock content %}
+

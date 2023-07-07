@@ -1,0 +1,12 @@
+{% extends 'flatpages/default.html' %}
+
+{% block content %}
+<h1>Создать или редактировать пост</h1>
+<hr>
+<form action="{% url 'post_add' %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.media }}
+    {{ form.as_p }}
+    <input type="submit" class="btn btn-success" value="Сохранить" />
+</form>
+{% endblock content %}

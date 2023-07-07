@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% extends 'flatpages/default.html' %}</title>
+</head>
+
+{% load censor %}
+{% load custom_tags %}
+
+{% block title %}
+Post
+{% endblock title %}
+
+{% block content %}
+<body>
+<h1>Все новости ({{ post_news.count}})</h1>
+<h3>{% current_time '%d %b %Y' %}</h3>
+<h3> {{ next_sale|default_if_none:"Чуть позже сообщим о более свежих новостях!" }}</h3>
+<hr>
+{% if post_news %}
+    <table>
+        <thead>
+        <tr>
+            <th>заголовок</th>
+            <th>категории</th>
+            <th>дата публикации</th>
+            <th>текст</th>
+            <!--th>коментарии</th-->
+        </tr>
+        {% for post in page_obj %}
+        <td>
+            <a href="{% url 'post_detail' post.id %}">{{ post.name|title }}</a> <!-- ссылка на сам пост -->
+            <a href="{% url 'post_edit' post.id %}"style="background-color:#ffffa1"><u>Редактировать</u></a>--> <!--ссылка на редактирование поста-->
+
+            <a href="{% url 'post_delete' post.id %}"style="color:red"><u> Удалить </u></a> --><!-- добавим ссылку на удаление поста-->
+        </td>
+        <tr>
+        </tr>
+        <tr>
+            <td><a href="{% url 'post_detail' post.id %}">{{ post.title|censor}}</a></td>
+            <td>
+            {% for category in post.category.all %}
+                <a href="{% url 'category_list' category.id %}">{{ category }}</a>
+            {% endfor %}
+            </td>
+            <td>{{ post.date_in|date:'d M Y'}}</td>
+            <td>{{ post.text|censor|safe|truncatechars:20}}</td>
+            <!--td>{% for comment in post.comments.all %}
+                <p>{{ comment.text }}</p>
+            {% empty %}
+                <p>нет комментариев</p>
+            {% endfor %}
+            </td-->
+        </tr>
+        {% endfor %}
+        </thead>
+    </table>
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; первая</a>
+                <a href="?page={{ page_obj.previous_page_number }}">'<<<'</a>
+            {% endif %}
+
+            <span class="current-page">
+                страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">'>>>'</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">последняя &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+
+    {% if is_not_author %}
+        <button><a href="{% url 'upgrade' %}"> стать автором!</a></button>
+    {% else %}
+        <h1>вы уже автор</h1>
+    {% endif %}
+
+{% else %}
+    <h2>новостей нет!</h2>
+{% endif %}
+{% endblock content %}
+</body>

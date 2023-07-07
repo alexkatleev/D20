@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% extends 'flatpages/default.html' %}</title>
+</head>
+
+{% load censor %}
+{% load custom_tags %}
+
+{% block title %}
+Post
+{% endblock title %}
+
+{% block content %}
+<body>
+<h1>Все новости ({{ post_news.count}})</h1>
+<h3>{% current_time '%d %b %Y' %}</h3>
+<h3> {{ next_sale|default_if_none:"Чуть позже сообщим о более свежих новостях!" }}</h3>
+<hr>
+{% if category_news_list %}
+<tr>
+    <table>
+        <thead>
+        <tr>
+            <th>
+                заголовок
+            </th>
+            <th>
+                категория
+            </th>
+            <th>
+                дата публикации
+            </th>
+            <th>
+                текст
+            </th>
+        </tr>
+        {% for post in category_news_list %}
+        <tr>
+            <td>
+            <a href="{% url 'post_detail' post.id %}">{{ post.title }}</a> <!-- ссылка на сам пост -->
+        </td>
+            <td>
+            {% for category in post.category.all %}
+                <a href="{% url 'category_list' category.id %}">{{ category }}</a>
+            {% endfor %}
+            </td>
+            <td>{{ post.date_in|date:'d M Y'}}</td>
+        <td><a href="{% url 'post_detail' post.id %}">{{ post.title|censor|truncatechars:20}}</a></td>
+
+        <td>
+                <p class="text-center"><a href="{% url 'post_edit' post.id %}"style="background-color:#ffffa1" ><u>Редактировать</u></a></p> <!--ссылка на редактирование поста-->
+
+                <p class="text-center"><a href="{% url 'post_delete' post.id %}"style="color:red"><u> Удалить </u></a></p> <!-- добавим ссылку на удаление поста-->
+        </td>
+        </tr>
+        {% endfor %}
+        </thead>
+    </table>
+{% if is_not_subscriber %}
+    <p class="text-center"><a href="{% url 'subscribe' category.id %}"style="background-color:green" class="btn btn-secondary btn-sm">подписаться</a></p>
+{% else %}
+    <p class="text-center"><a href="{% url 'unsubscribe' category.id %}"style="background-color:red" class="btn btn-secondary btn-sm">отписка</a></p>
+    {% endif %}
+{% if is_not_author %}
+<button> <a href="{% url 'upgrade' %}"> стать автором!</a> </button>
+{% else %}
+<h1>вы уже автор</h1>
+{% endif %}
+</tr>
+{% else %}
+    <h2>новостей нет!</h2>
+{% endif %}
+{% endblock content %}
+</body>
+</html>

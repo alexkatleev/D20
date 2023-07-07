@@ -1,0 +1,28 @@
+{% extends 'flatpages/default.html' %}
+
+{% block content %}
+  <h1>Мои комментарии</h1>
+
+  <form method="get" action="{% url 'comm_list' post.pk %}">
+    <select name="post">
+      <option value="">Все посты</option>
+      {% for post in posts %}
+      <option value="{{ post.id }}" {% if post.id|stringformat:"s" == post_id %}selected{% endif %}>{{ post.title }}</option>
+
+      {% endfor %}
+    </select>
+    <button type="submit">Фильтровать</button>
+  </form>
+
+  <ul>
+    {% for comment in comments %}
+      <li>
+        {{ comment.content }}
+        <a href="{% url 'comment_delete' comment.pk %}">Удалить</a>
+        {% if not comment.approved %}
+          <a href="{% url 'comment_approve' comment.pk %}">Одобрить</a>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}
